@@ -1,12 +1,86 @@
-# React + Vite
+# 🖥️ AI Code Editor - React Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern **AI-powered code editor** frontend built with **React, Tailwind CSS, and Lucide icons**. Supports **code explanation, fixing, and optimization** using AI, with Markdown-rendered outputs. ✨
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* 💡 **AI Code Explanation** – Get detailed explanations for your code snippets.
+* 🛠️ **AI Code Fix** – Automatically fix errors or improve existing code.
+* ⚡ **AI Code Optimization** – Suggest cleaner and optimized code versions.
+* 📝 **Markdown Rendering** – Beautifully rendered explanations with **React Markdown + GFM**.
+* 🌙 **Theme Support** – Switch between light and dark modes.
+* 🔀 **Navigation** – Seamless routing between editor, explain, fix, and optimize pages.
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **React 18** ⚛️
+* **Tailwind CSS** 🎨
+* **Lucide React** 🖼️
+* **React Router DOM** 🔗
+* **React Markdown + Remark GFM** 📝
+* **Vite** ⚡
+* **Node.js & npm** 📦
+
+## 📁 Folder Structure
+
+```
+react/
+├─ node_modules/
+├─ public/
+├─ src/
+│  ├─ assets/
+│  │  └─ fonts/
+│  ├─ pages/
+│  │  ├─ ExplainPage.jsx
+│  │  ├─ FixPage.jsx
+│  │  ├─ OptimizePage.jsx
+│  └─ App.jsx
+├─ package.json
+├─ package-lock.json
+└─ vite.config.js
+```
+
+## ⚡ Installation
+
+1. Clone the repo:
+
+```bash
+git clone https://github.com/ganthantm65/ai-code-editor.git
+cd ai-code-editor/react
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
+
+```bash
+npm run dev
+```
+
+Open the app at `http://localhost:5173` 🌐
+
+## 📄 Pages
+
+1. **Editor Page** – ✏️ Write your code and select language.
+2. **Explain Page** – 💡 View AI-generated explanations.
+3. **Fix Page** – 🛠️ Get AI-generated fixes for errors.
+4. **Optimize Page** – ⚡ Get AI-optimized code suggestions.
+
+> Each page receives **code and language** via React Router `state`.
+
+## 🔗 Dependencies
+
+* `react-markdown` 📝
+* `remark-gfm` ✅
+* `react-router-dom` 🔀
+* `lucide-react` 🖼️
+
+## 💡 Notes
+
+* Ensure Node.js 18+ is installed.
+* Run `npm audit fix` if there are vulnerabilities. ⚠️
+* Tailwind classes are used for responsive design and theme toggling.
