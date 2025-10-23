@@ -26,7 +26,7 @@ function CodeEditor() {
   const [language, setLanguage] = useState("python");
   const [output, setOutput] = useState("");
   const [code, setCode] = useState(code_example[language].code || "");
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [loading, setLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -39,7 +39,7 @@ function CodeEditor() {
     setDropdownOpen(false);
   };
 
-  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   const runCode = async () => {
     setLoading(true);
@@ -93,7 +93,7 @@ function CodeEditor() {
 
   const languageColors = {
     python: theme === "dark" ? "from-blue-500 to-cyan-500" : "from-blue-600 to-cyan-600",
-    java: theme === "dark" ? "from-orange-500 to-red-500" : "from-orange-600 to-red-600",
+    java: theme === "dark" ? "from-cyan-500 to-blue-500" : "from-cyan-600 to-blue-600",
     cpp: theme === "dark" ? "from-indigo-500 to-purple-500" : "from-indigo-600 to-purple-600",
     js: theme === "dark" ? "from-yellow-500 to-amber-500" : "from-yellow-600 to-amber-600",
   };
@@ -106,7 +106,7 @@ function CodeEditor() {
             <Code2 size={24} className="text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">CodeRunner</h1>
+            <h1 className="text-xl font-semibold tracking-tight">CodoMeter</h1>
             <p className={`text-xs ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
               Professional Code Editor
             </p>
@@ -154,12 +154,16 @@ function CodeEditor() {
           </button>
         </div>
       </div>
+
+      {/* Main Content */}
       <div className="flex-1 flex gap-4 p-4 overflow-hidden">
+        {/* Code Editor Panel */}
         <div className={`flex-1 ${panelBg} rounded-xl shadow-lg flex flex-col overflow-hidden ${
           theme === "dark" 
             ? "border border-[#30363d]" 
             : "border border-gray-200"
         }`}>
+          {/* Editor Header */}
           <div className={`flex items-center justify-between px-4 py-3 border-b ${
             theme === "dark" ? "border-[#30363d] bg-[#0d1117]" : "border-gray-200 bg-gray-50"
           }`}>
@@ -169,6 +173,8 @@ function CodeEditor() {
                 {code_example[language]?.file || ""}
               </span>
             </div>
+            
+            {/* Language Selector */}
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -224,6 +230,8 @@ function CodeEditor() {
               )}
             </div>
           </div>
+          
+          {/* Code Editor */}
           <textarea
             value={code || ""}
             onChange={updateCode}
@@ -236,11 +244,14 @@ function CodeEditor() {
             spellCheck="false"
           />
         </div>
+
+        {/* Output Panel */}
         <div className={`flex-1 ${panelBg} rounded-xl shadow-lg flex flex-col overflow-hidden ${
           theme === "dark" 
             ? "border border-[#30363d]" 
             : "border border-gray-200"
         }`}>
+          {/* Output Header */}
           <div className={`flex items-center justify-between px-4 py-3 border-b ${
             theme === "dark" ? "border-[#30363d] bg-[#0d1117]" : "border-gray-200 bg-gray-50"
           }`}>
@@ -280,6 +291,7 @@ function CodeEditor() {
           </div>
         </div>
       </div>
+
       <div className={`h-8 ${headerBg} flex items-center justify-between px-6 text-xs ${
         theme === "dark" ? "text-gray-400" : "text-gray-600"
       }`}>
@@ -288,8 +300,6 @@ function CodeEditor() {
             <div className={`w-2 h-2 rounded-full ${loading ? "bg-yellow-500 animate-pulse" : "bg-green-500"}`} />
             <span>{loading ? "Running" : "Ready"}</span>
           </div>
-          <span>•</span>
-          <span>Line 1, Col 1</span>
         </div>
         <div className="flex items-center gap-4">
           <span>UTF-8</span>
