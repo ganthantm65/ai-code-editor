@@ -1,118 +1,304 @@
-import React, { useState } from 'react'
-import "../index.css"
-import { CodeSquare, Play, Sun, Moon } from 'lucide-react'
+import React, { useState, useEffect } from "react";
+import { Code2, Play, Sun, Moon, Trash2, ChevronDown, Terminal } from "lucide-react";
+
+const code_example = {
+  python: { code: `print("Hello World")`, file: "main.py" },
+  java: {
+    code: `public class Main {
+    public static void main(String[] args){
+        System.out.println("Hello World");
+    }
+}`,
+    file: "Main.java",
+  },
+  cpp: {
+    code: `#include <iostream>
+int main(){
+    std::cout << "Hello World";
+    return 0;
+}`,
+    file: "main.cpp",
+  },
+  js: { code: `console.log("Hello World")`, file: "main.js" },
+};
 
 function CodeEditor() {
-    const code_example = {
-        python: { code: `print("Hello World")`, file: "main.py" },
-        java: { code: `public class Main{\n    public static void main(String[] args){\n        System.out.println("Hello World");\n    }\n}`, file: "Main.java" },
-        cpp: { code: `#include <iostream>\nint main(){\n    std::cout << "Hello World";\n    return 0;\n}`, file: "main.cpp" },
-        js: { code: `console.log("Hello World")`, file: "main.js" }
+  const [language, setLanguage] = useState("python");
+  const [output, setOutput] = useState("");
+  const [code, setCode] = useState(code_example[language].code || "");
+  const [theme, setTheme] = useState("dark");
+  const [loading, setLoading] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const updateOutput = (newOutput) => setOutput(newOutput || "");
+  const updateCode = (e) => setCode(e.target.value);
+  const updateLanguage = (lang) => {
+    setLanguage(lang);
+    setCode(code_example[lang]?.code || "");
+    setOutput("");
+    setDropdownOpen(false);
+  };
+
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+
+  const runCode = async () => {
+    setLoading(true);
+    setOutput("");
+    const url = `http://localhost:8080/code/run?language=${language}`;
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code }),
+      });
+      const data = await response.json();
+      updateOutput(data.output);
+    } catch {
+      updateOutput("⚠️ Error running code!");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const [language, setLanguage] = useState("python")
-    const [output, setOutput] = useState("")
-    const [code, setCode] = useState(code_example[language].code || "")
-    const [theme, setTheme] = useState("dark")
-    const [loading, setLoading] = useState(false)
+  const clearOutput = () => setOutput("");
 
-    const updateOutput = (newOutput) => setOutput(newOutput || "")
-    const updateCode = (e) => setCode(e.target.value)
-    const updateLanguage = (e) => {
-        const lang = e.target.value
-        setLanguage(lang)
-        setCode(code_example[lang]?.code || "")
-        setOutput("")
-    }
-    const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark")
+  useEffect(() => {
+    const handleKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") runCode();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [code, language]);
 
-    const runCode = async () => {
-        setLoading(true)
-        setOutput("")
-        const url = `http://localhost:8080/code/run?language=${language}`
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code: code })
-            })
-            const data = await response.json()
-            updateOutput(data.output)
-        } catch (err) {
-            updateOutput("Error running code!")
-        } finally {
-            setLoading(false)
-        }
-    }
+  const themeClasses =
+    theme === "dark" 
+      ? "bg-[#0d1117] text-gray-100" 
+      : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-gray-900";
+  
+  const headerBg = theme === "dark" 
+    ? "bg-[#161b22] border-b border-[#30363d]" 
+    : "bg-white/90 backdrop-blur-xl border-b border-gray-200";
+  
+  const editorBg = theme === "dark" 
+    ? "bg-[#0d1117]" 
+    : "bg-white";
+  
+  const panelBg = theme === "dark" 
+    ? "bg-[#161b22]" 
+    : "bg-white";
+  
+  const dropdownBg = theme === "dark" 
+    ? "bg-[#1c2128] border-[#30363d]" 
+    : "bg-white border-gray-200";
 
-    const themeClasses = theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-    const editorBg = theme === "dark" ? "bg-gray-900" : "bg-gray-200"
-    const panelBg = theme === "dark" ? "bg-gray-800" : "bg-gray-300"
-    const selectBg = theme === "dark" ? "bg-gray-700 text-white" : "bg-gray-200 text-gray-900"
+  const languageColors = {
+    python: theme === "dark" ? "from-blue-500 to-cyan-500" : "from-blue-600 to-cyan-600",
+    java: theme === "dark" ? "from-orange-500 to-red-500" : "from-orange-600 to-red-600",
+    cpp: theme === "dark" ? "from-indigo-500 to-purple-500" : "from-indigo-600 to-purple-600",
+    js: theme === "dark" ? "from-yellow-500 to-amber-500" : "from-yellow-600 to-amber-600",
+  };
 
-    return (
-        <div className={`w-screen h-screen flex flex-col gap-2 pt-0 font-poppins ${themeClasses}`}>
-            <div className={`w-full h-15 ${panelBg} flex items-center justify-between px-4`}>
-                <h1 className='text-2xl font-bold flex items-center gap-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-blue-500'>
-                    <CodeSquare size={25} className="text-blue-500" />
-                    <span>CodoMeter</span>
-                </h1>
-                <div className='flex gap-2 items-center'>
-                    <button onClick={toggleTheme} className='bg-yellow-500 p-2 rounded-md hover:bg-yellow-600'>
-                        {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-                    </button>
-                    <button
-                        className='bg-green-600 px-4 py-2 cursor-pointer rounded-md hover:bg-green-700 flex items-center gap-2'
-                        onClick={runCode}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                            <Play size={20} />
-                        )}
-                        <span className='font-bold'>{loading ? "Running..." : "Run"}</span>
-                    </button>
-                </div>
-            </div>
-            <div className='w-full h-[90vh] flex flex-row items-center justify-center gap-2'>
-                <div className={`w-[805px] h-full ${panelBg} rounded-md p-4`}>
-                    <div className='w-full h-10 flex flex-row items-center justify-between'>
-                        <h1 className='font-bold'>{code_example[language]?.file || ""}</h1>
-                        <div className={`w-40 h-8 ${selectBg} rounded-md flex items-center justify-center`}>
-                            <select
-                                className='w-full h-full bg-gray-700 rounded-lg pl-2 outline-none'
-                                onChange={updateLanguage}
-                                value={language}
-                            >
-                                <option value="python" className='font-poppins'>Python</option>
-                                <option value="java" className='font-poppins'>Java</option>
-                                <option value="cpp" className='font-poppins'>C++</option>
-                                <option value="js" className='font-poppins'>Node js</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className={`w-full h-[92%] ${editorBg} rounded-lg mt-4 p-4 font-mono text-sm overflow-auto`}>
-                        <textarea
-                            value={code || ""}
-                            onChange={updateCode}
-                            className='w-full h-full bg-transparent outline-none resize-none'
-                            spellCheck="false"
-                        />
-                    </div>
-                </div>
-                <div className={`w-[805px] h-full ${panelBg} rounded-md p-4 flex flex-col gap-5`}>
-                    <h1 className='font-bold text-2xl'>Output:</h1>
-                    <textarea
-                        value={output || ""}
-                        className={`w-full h-[92%] ${editorBg} rounded-lg p-4 font-mono text-sm outline-none resize-none`}
-                        spellCheck="false"
-                        readOnly
-                    />
-                </div>
-            </div>
+  return (
+    <div className={`w-screen h-screen flex flex-col ${themeClasses}`}>
+      <div className={`w-full h-16 ${headerBg} flex items-center justify-between px-6 shadow-sm`}>
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg bg-gradient-to-br ${languageColors[language]}`}>
+            <Code2 size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight">CodeRunner</h1>
+            <p className={`text-xs ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+              Professional Code Editor
+            </p>
+          </div>
         </div>
-    )
+        
+        <div className="flex gap-3 items-center">
+          <button 
+            onClick={toggleTheme} 
+            className={`p-2.5 rounded-lg transition-all ${
+              theme === "dark" 
+                ? "bg-[#21262d] hover:bg-[#30363d] text-gray-300" 
+                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            }`}
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+          
+          <button
+            className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all ${
+              loading 
+                ? "opacity-50 cursor-not-allowed" 
+                : "hover:scale-[1.02] active:scale-[0.98]"
+            } ${
+              theme === "dark"
+                ? "bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-lg shadow-emerald-900/50"
+                : "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white shadow-lg shadow-emerald-500/30"
+            }`}
+            onClick={runCode}
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Play size={18} fill="currentColor" />
+            )}
+            <span className="text-sm">{loading ? "Running..." : "Run Code"}</span>
+            {!loading && (
+              <kbd className={`ml-1 px-1.5 py-0.5 rounded text-xs font-mono ${
+                theme === "dark" ? "bg-white/10" : "bg-black/10"
+              }`}>
+                ⌘↵
+              </kbd>
+            )}
+          </button>
+        </div>
+      </div>
+      <div className="flex-1 flex gap-4 p-4 overflow-hidden">
+        <div className={`flex-1 ${panelBg} rounded-xl shadow-lg flex flex-col overflow-hidden ${
+          theme === "dark" 
+            ? "border border-[#30363d]" 
+            : "border border-gray-200"
+        }`}>
+          <div className={`flex items-center justify-between px-4 py-3 border-b ${
+            theme === "dark" ? "border-[#30363d] bg-[#0d1117]" : "border-gray-200 bg-gray-50"
+          }`}>
+            <div className="flex items-center gap-2">
+              <Code2 size={18} className={theme === "dark" ? "text-gray-400" : "text-gray-600"} />
+              <span className={`text-sm font-medium ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                {code_example[language]?.file || ""}
+              </span>
+            </div>
+            <div className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ${dropdownBg} ${
+                  theme === "dark"
+                    ? "hover:bg-[#21262d] text-gray-200"
+                    : "hover:bg-gray-50 text-gray-700"
+                }`}
+              >
+                <span className="text-base">
+                  {language === "python" && "🐍"}
+                  {language === "java" && "☕"}
+                  {language === "cpp" && "⚙️"}
+                  {language === "js" && "⚡"}
+                </span>
+                <span>
+                  {language === "python" && "Python"}
+                  {language === "java" && "Java"}
+                  {language === "cpp" && "C++"}
+                  {language === "js" && "Node.js"}
+                </span>
+                <ChevronDown size={16} className={`transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+              
+              {dropdownOpen && (
+                <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-xl border overflow-hidden z-10 ${dropdownBg} ${
+                  theme === "dark" ? "shadow-black/50" : "shadow-gray-300"
+                }`}>
+                  {[
+                    { key: "python", icon: "🐍", name: "Python" },
+                    { key: "java", icon: "☕", name: "Java" },
+                    { key: "cpp", icon: "⚙️", name: "C++" },
+                    { key: "js", icon: "⚡", name: "Node.js" },
+                  ].map((lang, idx) => (
+                    <button
+                      key={lang.key}
+                      onClick={() => updateLanguage(lang.key)}
+                      className={`w-full px-4 py-2.5 text-left flex items-center gap-3 text-sm transition-colors ${
+                        language === lang.key
+                          ? theme === "dark"
+                            ? "bg-blue-600 text-white"
+                            : "bg-blue-500 text-white"
+                          : theme === "dark"
+                          ? "hover:bg-[#21262d] text-gray-200"
+                          : "hover:bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      <span className="text-lg">{lang.icon}</span>
+                      <span className="font-medium">{lang.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <textarea
+            value={code || ""}
+            onChange={updateCode}
+            placeholder="// Start coding..."
+            className={`flex-1 ${editorBg} p-6 font-mono text-sm leading-relaxed outline-none resize-none ${
+              theme === "dark" 
+                ? "text-gray-100 placeholder-gray-600" 
+                : "text-gray-900 placeholder-gray-400"
+            }`}
+            spellCheck="false"
+          />
+        </div>
+        <div className={`flex-1 ${panelBg} rounded-xl shadow-lg flex flex-col overflow-hidden ${
+          theme === "dark" 
+            ? "border border-[#30363d]" 
+            : "border border-gray-200"
+        }`}>
+          <div className={`flex items-center justify-between px-4 py-3 border-b ${
+            theme === "dark" ? "border-[#30363d] bg-[#0d1117]" : "border-gray-200 bg-gray-50"
+          }`}>
+            <div className="flex items-center gap-2">
+              <Terminal size={18} className={theme === "dark" ? "text-gray-400" : "text-gray-600"} />
+              <span className={`text-sm font-medium ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                Console Output
+              </span>
+            </div>
+            
+            <button 
+              onClick={clearOutput} 
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                theme === "dark"
+                  ? "text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                  : "text-red-500 hover:bg-red-50 hover:text-red-600"
+              }`}
+            >
+              <Trash2 size={16} />
+              <span>Clear</span>
+            </button>
+          </div>
+          <div className={`flex-1 ${editorBg} p-6 overflow-auto`}>
+            {output ? (
+              <pre className={`font-mono text-sm leading-relaxed whitespace-pre-wrap ${
+                theme === "dark" ? "text-emerald-400" : "text-gray-900"
+              }`}>{output}</pre>
+            ) : (
+              <div className={`flex flex-col items-center justify-center h-full ${
+                theme === "dark" ? "text-gray-600" : "text-gray-400"
+              }`}>
+                <Terminal size={48} className="mb-3 opacity-50" />
+                <p className="text-sm font-medium">No output yet</p>
+                <p className="text-xs mt-1">Run your code to see results here</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className={`h-8 ${headerBg} flex items-center justify-between px-6 text-xs ${
+        theme === "dark" ? "text-gray-400" : "text-gray-600"
+      }`}>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${loading ? "bg-yellow-500 animate-pulse" : "bg-green-500"}`} />
+            <span>{loading ? "Running" : "Ready"}</span>
+          </div>
+          <span>•</span>
+          <span>Line 1, Col 1</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span>UTF-8</span>
+          <span>•</span>
+          <span className="font-medium">{language.toUpperCase()}</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default CodeEditor
+export default CodeEditor;

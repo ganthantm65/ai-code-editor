@@ -3,8 +3,24 @@
   src: url('./assets/fonts/Poppins-Regular.ttf');
 }
 
+@font-face{
+  font-family: 'JetBrains Mono';
+  src: url('./assets/fonts/JetBrainsMono-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Source Code Pro';
+  src: url('./assets/fonts/SourceCodePro-Regular.ttf');
+}
+
 @import "tailwindcss";
 
 @theme {
   --font-poppins:'Poppins', 'sans-serif'
+}
+@theme {
+  --font-jetbrains:'JetBrains Mono', 'monospace'
+}
+@theme {
+  --font-sourcecode:'Source Code Pro', 'monospace'
 }
