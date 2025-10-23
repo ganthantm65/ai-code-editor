@@ -1,4 +1,4 @@
-# 🖥️ AI Code Editor - React Frontend
+# 🖥️ CodoMeter- React Frontend
 
 A modern **AI-powered code editor** frontend built with **React, Tailwind CSS, and Lucide icons**. Supports **code explanation, fixing, and optimization** using AI, with Markdown-rendered outputs. ✨
 
